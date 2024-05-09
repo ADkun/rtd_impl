@@ -44,7 +44,7 @@ pub fn run() {
                 }
             }
             None => {
-                service.show_todo_list(TodoStatus::All);
+                service.show_todo_list(TodoStatus::Valid);
             }
         }
     }

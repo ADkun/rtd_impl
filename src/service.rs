@@ -10,6 +10,7 @@ use crate::util::IncCounter;
 #[derive(Debug)]
 pub enum TodoStatus {
     All,
+    Valid,
     Completed,
     Uncompleted,
     Deleted,
@@ -56,8 +57,9 @@ impl TodoService {
 
         let id = self.inc_counter.next();
         let todo = Todo::new(id, name);
-        let inserted = self.list.todos.insert(id, todo);
-        println!("{} 已添加", inserted.unwrap());
+        self.list.todos.insert(id, todo);
+
+        println!("{} 已添加 {}", id, name);
     }
 
     pub fn show_todo_list(&self, status: TodoStatus) {
@@ -80,6 +82,11 @@ impl TodoService {
                 }
                 TodoStatus::Deleted => {
                     if todo.is_deleted() {
+                        println!("{}", todo);
+                    }
+                }
+                TodoStatus::Valid => {
+                    if !todo.is_deleted() {
                         println!("{}", todo);
                     }
                 }

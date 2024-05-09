@@ -10,7 +10,7 @@ use clap::{ArgGroup, Parser};
     .multiple(false)))]
 pub struct Cli {
     /// Add a todo
-    #[arg(short, long, value_name = "ITEM-NAME", help = "Add a new todo")]
+    #[arg(short, long, value_name = "ITEM-NAME", help = "添加一个待办事项")]
     pub add: Option<String>,
 
     /// Show all todos by status
@@ -23,12 +23,12 @@ pub struct Cli {
         short,
         long = "list",
         value_name = "STATUS",
-        help = "Get todos by status [empty(all), completed, uncompleted, deleted]"
+        help = "获取待办事项，若为空则展示所有未删除待办事项，支持指定状态值：[all, completed, uncompleted, deleted]"
     )]
     pub list: Option<Option<String>>,
 
     /// Mark a todo as uncompleted
-    #[arg(short, long, value_name = "ID", help = "Mark a todo as uncompleted")]
+    #[arg(short, long, value_name = "ID", help = "标记一个待办事项为未完成")]
     pub uncomplete: Option<String>,
 
     /// Delete a todo into trash bin
@@ -36,30 +36,22 @@ pub struct Cli {
         short,
         long = "delete",
         value_name = "ID",
-        help = "Delete a todo into trash bin"
+        help = "将一个待办事项放入回收站"
     )]
     pub delete: Option<String>,
 
     /// Restore a deleted todo
-    #[arg(
-        long,
-        value_name = "ID",
-        help = "Restore a deleted todo from trash bin"
-    )]
+    #[arg(long, value_name = "ID", help = "将一个待办事项从回收站恢复")]
     pub restore: Option<String>,
 
     /// Destroy a todo permanently
-    #[arg(
-        long = "destroy",
-        value_name = "ID",
-        help = "Destroy a todo permanently"
-    )]
+    #[arg(long = "destroy", value_name = "ID", help = "彻底删除一个待办事项")]
     pub destroy: Option<String>,
 
     /// Clean up the trash bin
-    #[arg(long = "destroy-deleted", help = "Clean up the trash bin")]
+    #[arg(long = "destroy-deleted", help = "清空回收站")]
     pub destroy_deleted: Option<bool>,
 
-    #[arg(long, help = "Clear all todos")]
+    #[arg(long, help = "清空所有待办事项")]
     pub clear: Option<bool>,
 }
