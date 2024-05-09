@@ -15,7 +15,7 @@ impl IncCounter {
     }
 
     /// 生成下一个自增数
-    pub fn inc(&mut self) -> u64 {
+    pub fn next(&mut self) -> u64 {
         self.count = self.count.wrapping_add(1);
         self.count
     }

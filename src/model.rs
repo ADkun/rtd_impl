@@ -4,6 +4,9 @@
 //! - 序列化
 //! - 反序列化
 
+use std::collections::BTreeMap;
+use std::fmt::Display;
+
 use crate::util;
 use serde::{Deserialize, Serialize};
 
@@ -33,10 +36,10 @@ pub struct Todo {
 }
 
 impl Todo {
-    pub fn new(id: u64, name: String) -> Self {
+    pub fn new(id: u64, name: &str) -> Self {
         Self {
             id,
-            name,
+            name: name.to_string(),
             completed: false,
             deleted: false,
             created_at: util::get_current_timestamp_secs(),
@@ -64,25 +67,33 @@ impl Todo {
         self.deleted = false;
         self.deleted_at = None;
     }
+
+    pub fn is_completed(&self) -> bool {
+        self.completed
+    }
+
+    pub fn is_deleted(&self) -> bool {
+        self.deleted
+    }
+}
+
+impl Display for Todo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "id: {}, name: {}", self.id, self.name)
+    }
 }
 
 /// 待办事项列表
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TodoList {
-    pub todos: Vec<Todo>,
+    pub todos: BTreeMap<u64, Todo>,
 }
 
 impl TodoList {
     pub fn new() -> Self {
-        Self { todos: Vec::new() }
-    }
-
-    pub fn add(&mut self, todo: Todo) {
-        self.todos.push(todo);
-    }
-
-    pub fn remove(&mut self, id: u64) {
-        self.todos.retain(|todo| todo.id != id);
+        Self {
+            todos: BTreeMap::new(),
+        }
     }
 }
 

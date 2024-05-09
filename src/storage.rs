@@ -3,14 +3,15 @@
 //! - 文件读写
 
 use crate::model::{Todo, TodoList};
-use std::error::Error;
+use crate::util::path_exists;
+use std::{collections::BTreeMap, error::Error};
 
-/// 默认的CSV文件相对路径
-pub const DEFAULT_CSV_REL_FILE_PATH: &str = "todo.csv";
+/// 默认的Json文件相对路径
+pub const DEFAULT_JSON_REL_FILE_PATH: &str = "todo.json";
 
 /// 待办事项存储类型
 pub enum TodoStorageType {
-    Csv,
+    Json,
 }
 
 /// 待办事项存储工具类
@@ -26,17 +27,23 @@ impl TodoStorage {
             return Err("file_path should not be empty".into());
         }
 
-        Ok(Self {
+        let result = Self {
             storage_type,
             file_path: file_path.to_string(),
-        })
+        };
+
+        if !path_exists(file_path) {
+            result.save(&TodoList::new())?;
+        }
+
+        Ok(result)
     }
 
     pub fn save(&self, todo_list: &TodoList) -> Result<(), Box<dyn Error>> {
         match self.storage_type {
-            TodoStorageType::Csv => {
-                let mut wtr = csv::Writer::from_path(&self.file_path)?;
-                wtr.serialize(todo_list)?;
+            TodoStorageType::Json => {
+                let json_str = serde_json::to_string(todo_list)?;
+                std::fs::write(&self.file_path, json_str)?;
                 Ok(())
             }
         }
@@ -44,14 +51,10 @@ impl TodoStorage {
 
     pub fn load(&self) -> Result<TodoList, Box<dyn Error>> {
         match self.storage_type {
-            TodoStorageType::Csv => {
-                let mut rdr = csv::Reader::from_path(&self.file_path)?;
-                let mut todos = Vec::new();
-                for record in rdr.deserialize() {
-                    let todo: Todo = record?;
-                    todos.push(todo);
-                }
-                Ok(TodoList { todos })
+            TodoStorageType::Json => {
+                let json_str = std::fs::read_to_string(&self.file_path)?;
+                let todos: TodoList = serde_json::from_str(&json_str)?;
+                Ok(todos)
             }
         }
     }
